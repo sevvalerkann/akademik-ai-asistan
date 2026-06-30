@@ -1,37 +1,34 @@
 import streamlit as st
-from langchain_groq import ChatGroq
-from langchain_community.tools.tavily_search import TavilySearchResults
+from gtts import gTTS
+from streamlit_audio_recorder import audio_recorder
+import os
 
-# 1. AYARLAR
-# Streamlit'in secrets.toml dosyasından anahtarları çek
-try:
-    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-    TAVILY_API_KEY = st.secrets["TAVILY_API_KEY"]
-except:
-    st.error("HATA: secrets.toml dosyan bulunamadı veya içindeki anahtar isimleri yanlış.")
-    st.stop()
+# --- Başlık ---
+st.title("🎤 Süper Yapay Zeka Ajanı")
 
-# 2. ARAÇLAR VE MODEL
-search_tool = TavilySearchResults(tavily_api_key=TAVILY_API_KEY)
-llm = ChatGroq(api_key=GROQ_API_KEY, model_name="llama-3.3-70b-versatile")
+# --- Sesli Sohbet (Giriş) ---
+st.subheader("Sesli Sohbet")
+audio_bytes = audio_recorder()
 
-# 3. ARAYÜZ
-st.title("🤖 Süper Yapay Zeka Ajanı")
-soru = st.text_input("Ne araştırmamı istersin?")
+if audio_bytes:
+    st.audio(audio_bytes, format="audio/wav")
+    st.write("Sesin algılandı, işleniyor...")
+    # Burada Groq ile metne çevirme işlemini tetikleyebilirsin
 
-if st.button("Araştır"):
-    if soru:
-        with st.spinner("Ajanım internette araştırıyor..."):
-            try:
-                # İnternette ara
-                arama_sonucu = search_tool.run(soru)
+# --- Metin Girişi ---
+user_input = st.text_input("Ne araştırmamı istersin?")
 
-                # Arama sonucunu modele gönder ve özetlet
-                mesaj = f"Kullanıcı sorusu: {soru} \n\n İnternetten bulunan bilgiler: {arama_sonucu}"
-                yanit = llm.invoke(mesaj)
+if user_input:
+    # --- AI Yanıtı (Buraya Groq API çağrın gelecek) ---
+    ai_cevabi = "Bu konuda araştırma yaptım ve şu sonuçlara ulaştım..."  # AI cevabın buraya gelecek
+    st.write(ai_cevabi)
 
-                st.write(yanit.content)
-            except Exception as e:
-                st.error(f"Ajan çalışırken bir hata oluştu: {e}")
-    else:
-        st.warning("Lütfen bir soru gir.")
+
+    # --- Metni Sese Çevir ve Oynat ---
+    def metni_seslendir(metin):
+        tts = gTTS(text=metin, lang='tr')
+        tts.save("cevap.mp3")
+        st.audio("cevap.mp3")
+
+
+    metni_seslendir(ai_cevabi)
