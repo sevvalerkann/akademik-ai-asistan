@@ -3,27 +3,36 @@ from gtts import gTTS
 from streamlit_audio_recorder import audio_recorder
 import os
 
-st.title("🎤 Süper Yapay Zeka Ajanı")
+# --- AetherAI Arayüz Ayarları ---
+st.set_page_config(page_title="AetherAI", page_icon="✨")
+st.title("✨ AetherAI")
+st.subheader("Akademik Destek Asistanın")
 
-st.subheader("Sesli Sohbet")
-audio_bytes = audio_recorder()
+# Sohbet geçmişini tutmak için session_state kullanımı
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-if audio_bytes:
-    st.audio(audio_bytes, format="audio/wav")
-    st.write("Sesin algılandı, işleniyor...")
+# Geçmiş mesajları ekranda tut
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-user_input = st.text_input("Ne araştırmamı istersin?")
+# --- Kullanıcı Girişi (Chat Arayüzü) ---
+if prompt := st.chat_input("Bir şeyler sor..."):
+    # Kullanıcı mesajını ekle
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-if user_input:
-    ai_cevabi = "Bu konuda araştırma yaptım ve şu sonuçlara ulaştım..." 
-    st.write(ai_cevabi)
+    # --- AetherAI Cevabı ---
+    with st.chat_message("assistant"):
+        # Buraya Groq API yanıtın gelecek
+        ai_cevabi = f"AetherAI olarak '{prompt}' konusunda araştırma yapıyorum..."
+        st.markdown(ai_cevabi)
 
-
- # Metni sese çevir ve oynat
-    def metni_seslendir(metin):
-        tts = gTTS(text=metin, lang='tr')
+        # Sese çevir ve oynat
+        tts = gTTS(text=ai_cevabi, lang='tr')
         tts.save("cevap.mp3")
         st.audio("cevap.mp3")
 
-
-    metni_seslendir(ai_cevabi)
+    st.session_state.messages.append({"role": "assistant", "content": ai_cevabi})
