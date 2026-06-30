@@ -14,7 +14,6 @@ def pdf_metnini_cikar(pdf_yolu):
 
 # 2. YAPAY ZEKA İLE KONUŞMA FONKSİYONU
 def yapay_zekaya_soru_sor(pdf_metni, soru):
-    # KENDİ GROQ ANAHTARINI BURAYA YAZ
     client = Groq(api_key="")
 
     icerik = f"DERS NOTLARI:\n{pdf_metni}\n\nSORU: {soru}"
@@ -32,7 +31,6 @@ def yapay_zekaya_soru_sor(pdf_metni, soru):
 
 # 3. BURADAN ÇALIŞTIRIYORUZ
 if __name__ == "__main__":
-    # PDF dosyanın adı burada yazanla aynı olmalı
     dosya_adim = "dersnotu.pdf"
 
     print("📄 PDF okunuyor...")
