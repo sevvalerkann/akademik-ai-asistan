@@ -1,6 +1,6 @@
 import streamlit as st
 from gtts import gTTS
-from streamlit_audio_recorder import audio_recorder
+from streamlit_audiorecorder import st_audiorecorder
 import os
 import streamlit as st
 from gtts import gTTS
