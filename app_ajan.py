@@ -2,6 +2,41 @@ import streamlit as st
 from gtts import gTTS
 from streamlit_audio_recorder import audio_recorder
 import os
+import streamlit as st
+from gtts import gTTS
+import os
+
+# --- AetherAI Derin Uzay Teması ---
+st.set_page_config(page_title="AetherAI", page_icon="🌌")
+
+st.markdown("""
+    <style>
+    /* Ana Arka Plan */
+    .stApp {
+        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        color: #e0e0e0;
+    }
+    /* Başlık Rengi */
+    h1, h2, h3 {
+        color: #c4a1ff !important;
+        text-shadow: 2px 2px 8px #000;
+    }
+    /* Sohbet Kutuları (Glassmorphism) */
+    [data-testid="stChatMessage"] {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(196, 161, 255, 0.3);
+        border-radius: 15px;
+    }
+    /* Chat Giriş Kutusu */
+    [data-testid="stChatInput"] {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- AetherAI Başlık ---
+st.title("🌌 AetherAI")
+st.subheader("Kozmik Akademik Asistanın")
 
 # --- AetherAI Arayüz Ayarları ---
 st.set_page_config(page_title="AetherAI", page_icon="✨")
