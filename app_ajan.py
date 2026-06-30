@@ -1,6 +1,6 @@
 import streamlit as st
 from gtts import gTTS
-from streamlit_audiorecorder import st_audiorecorder
+#from streamlit_audiorecorder import st_audiorecorder
 import os
 import streamlit as st
 from gtts import gTTS
@@ -66,8 +66,8 @@ if prompt := st.chat_input("Bir şeyler sor..."):
         st.markdown(ai_cevabi)
 
         # Sese çevir ve oynat
-        tts = gTTS(text=ai_cevabi, lang='tr')
-        tts.save("cevap.mp3")
-        st.audio("cevap.mp3")
+        #tts = gTTS(text=ai_cevabi, lang='tr')
+        #tts.save("cevap.mp3")
+        #st.audio("cevap.mp3")
 
     st.session_state.messages.append({"role": "assistant", "content": ai_cevabi})
