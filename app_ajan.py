@@ -32,24 +32,12 @@ for message in st.session_state.messages:
 
 # 5. Sohbet Mantığı (Tek bir giriş kutusu)
 # Sohbet Mantığı
-if prompt := st.chat_input("Akademik bir soru sor..."):
-    # Mesajı geçmişe ekle
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    # Arama ve Cevaplama bloğunu tamamen buraya, bloğun içine alıyoruz
     with st.chat_message("assistant"):
-        with st.spinner("Kozmik veriler taranıyor..."):
-            # Arama yap
-            arama_sonucu = search.run(prompt)
+        with st.spinner("Kozmik veriler işleniyor..."):
+            # ARAMA KISMINI DEVRE DIŞI BIRAKIYORUZ (Sadece Groq'a soracağız)
+            # Eğer asistanın kendi akademik bilgisi yetiyorsa, doğrudan cevap alacağız.
 
-            # Veriyi kırp (hata almamak için)
-            ozet_sonuc = arama_sonucu[:2000] if arama_sonucu else "Veri bulunamadı."
-
-            # Groq'a gönder
-            cevap = llm.invoke(
-                f"Soru: {prompt}. Aşağıdaki özet bilgiyi kullanarak akademik bir açıklama yap: {ozet_sonuc}")
+            cevap = llm.invoke(f"Soru: {prompt}. Lütfen bu soruya akademik, detaylı ve açıklayıcı bir cevap ver.")
 
             st.markdown(cevap.content)
             st.session_state.messages.append({"role": "assistant", "content": cevap.content})
