@@ -22,13 +22,6 @@ st.subheader("Kozmik Akademik Asistanın")
 llm = ChatGroq(groq_api_key=st.secrets["GROQ_API_KEY"], model_name="llama-3.1-70b-versatile")
 search = TavilySearchResults(tavily_api_key=st.secrets["TAVILY_API_KEY"])
 
-# 4. Sohbet Geçmişi
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
 
 # 5. Sohbet Mantığı (Tek bir giriş kutusu)
 # Sohbet Mantığı
@@ -39,5 +32,27 @@ for message in st.session_state.messages:
 
             cevap = llm.invoke(f"Soru: {prompt}. Lütfen bu soruya akademik, detaylı ve açıklayıcı bir cevap ver.")
 
+            st.markdown(cevap.content)
+            st.session_state.messages.append({"role": "assistant", "content": cevap.content})
+
+# --- Sohbet Geçmişi ---
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# --- Sohbet Giriş Kutusu (EN ALTTA OLMALI) ---
+if prompt := st.chat_input("Akademik bir soru sor..."):
+    # Mesajı geçmişe ekle
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Asistan cevabı
+    with st.chat_message("assistant"):
+        with st.spinner("Kozmik veriler işleniyor..."):
+            cevap = llm.invoke(f"Soru: {prompt}. Lütfen bu soruya akademik, detaylı ve açıklayıcı bir cevap ver.")
             st.markdown(cevap.content)
             st.session_state.messages.append({"role": "assistant", "content": cevap.content})
