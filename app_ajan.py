@@ -1,3 +1,28 @@
+# --- AetherAI Beyin Entegrasyonu ---
+from langchain_groq import ChatGroq
+from langchain_community.tools.tavily_search import TavilySearchResults
+
+# Secrets'tan anahtarları güvenli bir şekilde al
+llm = ChatGroq(api_key=st.secrets["GROQ_API_KEY"], model_name="llama3-70b-8192")
+search = TavilySearchResults(tavily_api_key=st.secrets["TAVILY_API_KEY"])
+
+# --- Sohbet Mantığı ---
+if prompt := st.chat_input("Akademik bir soru sor..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        # 1. Tavily ile internette ara
+        arama_sonucu = search.run(prompt)
+        # 2. Groq ile bu sonucu akademik bir dille özetle
+        cevap = llm.invoke(
+            f"Bu arama sonuçlarını kullanarak akademik ve açıklayıcı bir cevap ver: {arama_sonucu} Soru: {prompt}")
+
+        st.markdown(cevap.content)
+
+    st.session_state.messages.append({"role": "assistant", "content": cevap.content})
+
 import streamlit as st
 from gtts import gTTS
 #from streamlit_audiorecorder import st_audiorecorder
