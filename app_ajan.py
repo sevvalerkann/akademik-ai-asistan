@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from langchain_groq import ChatGroq
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_core.messages import HumanMessage
 
 # 1. Sayfa Yapılandırması
 st.set_page_config(page_title="AetherAI", page_icon="🌌", layout="centered")
@@ -20,7 +20,6 @@ st.subheader("Kozmik Akademik Asistanın")
 
 # 3. Beyin (API) Tanımları
 llm = ChatGroq(groq_api_key=st.secrets["GROQ_API_KEY"], model_name="llama-3.1-70b-versatile")
-# search = TavilySearchResults(tavily_api_key=st.secrets["TAVILY_API_KEY"]) # Şimdilik sadece Groq'u kullanıyoruz
 
 # 4. Sohbet Geçmişini Başlat
 if "messages" not in st.session_state:
@@ -31,16 +30,19 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 6. Sohbet Mantığı (Giriş kutusu)
+# 6. Sohbet Mantığı
 if prompt := st.chat_input("Akademik bir soru sor..."):
-    # Kullanıcı mesajını ekle ve göster
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Asistan cevabı (Sadece Groq ile)
+    # Asistan cevabı
     with st.chat_message("assistant"):
         with st.spinner("Kozmik veriler işleniyor..."):
-            cevap = llm.invoke(f"Soru: {prompt}. Lütfen bu soruya akademik, detaylı ve açıklayıcı bir cevap ver.")
+            # HumanMessage ile mesajı sarmalıyoruz (Hata çözümü için)
+            mesaj = HumanMessage(
+                content=f"Soru: {prompt}. Lütfen bu soruya akademik, detaylı ve açıklayıcı bir cevap ver.")
+            cevap = llm.invoke([mesaj])
+
             st.markdown(cevap.content)
             st.session_state.messages.append({"role": "assistant", "content": cevap.content})
