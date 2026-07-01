@@ -43,7 +43,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# --- Sohbet Giriş Kutusu (EN ALTTA OLMALI) ---
+# --- Sohbet Giriş Kutusu ---
 if prompt := st.chat_input("Akademik bir soru sor..."):
     # Mesajı geçmişe ekle
     st.session_state.messages.append({"role": "user", "content": prompt})
