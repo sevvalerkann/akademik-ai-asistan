@@ -31,16 +31,25 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # 5. Sohbet Mantığı (Tek bir giriş kutusu)
-with st.chat_message("assistant"):
-    with st.spinner("Kozmik veriler taranıyor..."):
-        # İnternetten arama yap
-        arama_sonucu = search.run(prompt)
+# Sohbet Mantığı
+if prompt := st.chat_input("Akademik bir soru sor..."):
+    # Mesajı geçmişe ekle
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-        # Gelen sonucu çok uzunsa kırp (Groq limitlerine takılmamak için ilk 2000 karakter)
-        ozet_sonuc = arama_sonucu[:2000] if arama_sonucu else "Veri bulunamadı."
+    # Arama ve Cevaplama bloğunu tamamen buraya, bloğun içine alıyoruz
+    with st.chat_message("assistant"):
+        with st.spinner("Kozmik veriler taranıyor..."):
+            # Arama yap
+            arama_sonucu = search.run(prompt)
 
-        # Yanıtı oluştur
-        cevap = llm.invoke(f"Soru: {prompt}. Aşağıdaki özet bilgiyi kullanarak akademik bir açıklama yap: {ozet_sonuc}")
+            # Veriyi kırp (hata almamak için)
+            ozet_sonuc = arama_sonucu[:2000] if arama_sonucu else "Veri bulunamadı."
 
-        st.markdown(cevap.content)
-        st.session_state.messages.append({"role": "assistant", "content": cevap.content})
+            # Groq'a gönder
+            cevap = llm.invoke(
+                f"Soru: {prompt}. Aşağıdaki özet bilgiyi kullanarak akademik bir açıklama yap: {ozet_sonuc}")
+
+            st.markdown(cevap.content)
+            st.session_state.messages.append({"role": "assistant", "content": cevap.content})
