@@ -19,7 +19,7 @@ st.title("🌌 AetherAI")
 st.subheader("Kozmik Akademik Asistanın")
 
 # 3. Beyin (API) Tanımları
-llm = ChatGroq(groq_api_key=st.secrets["GROQ_API_KEY"], model_name="llama3-70b-8192")
+llm = ChatGroq(groq_api_key=st.secrets["GROQ_API_KEY"], model_name="llama-3.1-70b-versatile")
 search = TavilySearchResults(tavily_api_key=st.secrets["TAVILY_API_KEY"])
 
 # 4. Sohbet Geçmişi
@@ -31,16 +31,16 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # 5. Sohbet Mantığı (Tek bir giriş kutusu)
-if prompt := st.chat_input("Akademik bir soru sor..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
+with st.chat_message("assistant"):
+    with st.spinner("Kozmik veriler taranıyor..."):
+        # İnternetten arama yap
+        arama_sonucu = search.run(prompt)
 
-    with st.chat_message("assistant"):
-        with st.spinner("Kozmik veriler taranıyor..."):
-            # Arama ve Yanıt
-            arama_sonucu = search.run(prompt)
-            cevap = llm.invoke(f"Soru: {prompt}. Arama sonuçlarını kullanarak akademik bir cevap ver: {arama_sonucu}")
+        # Gelen sonucu çok uzunsa kırp (Groq limitlerine takılmamak için ilk 2000 karakter)
+        ozet_sonuc = arama_sonucu[:2000] if arama_sonucu else "Veri bulunamadı."
 
-            st.markdown(cevap.content)
-            st.session_state.messages.append({"role": "assistant", "content": cevap.content})
+        # Yanıtı oluştur
+        cevap = llm.invoke(f"Soru: {prompt}. Aşağıdaki özet bilgiyi kullanarak akademik bir açıklama yap: {ozet_sonuc}")
+
+        st.markdown(cevap.content)
+        st.session_state.messages.append({"role": "assistant", "content": cevap.content})
