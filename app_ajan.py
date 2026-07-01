@@ -3,7 +3,7 @@ import os
 from langchain_groq import ChatGroq
 from langchain_community.tools.tavily_search import TavilySearchResults
 
-# 1. Sayfa Yapılandırması (Sadece bir kez en üstte olmalı)
+# 1. Sayfa Yapılandırması
 st.set_page_config(page_title="AetherAI", page_icon="🌌", layout="centered")
 
 # 2. CSS Teması
@@ -20,37 +20,25 @@ st.subheader("Kozmik Akademik Asistanın")
 
 # 3. Beyin (API) Tanımları
 llm = ChatGroq(groq_api_key=st.secrets["GROQ_API_KEY"], model_name="llama-3.1-70b-versatile")
-search = TavilySearchResults(tavily_api_key=st.secrets["TAVILY_API_KEY"])
+# search = TavilySearchResults(tavily_api_key=st.secrets["TAVILY_API_KEY"]) # Şimdilik sadece Groq'u kullanıyoruz
 
-
-# 5. Sohbet Mantığı (Tek bir giriş kutusu)
-# Sohbet Mantığı
-    with st.chat_message("assistant"):
-        with st.spinner("Kozmik veriler işleniyor..."):
-            # ARAMA KISMINI DEVRE DIŞI BIRAKIYORUZ (Sadece Groq'a soracağız)
-            # Eğer asistanın kendi akademik bilgisi yetiyorsa, doğrudan cevap alacağız.
-
-            cevap = llm.invoke(f"Soru: {prompt}. Lütfen bu soruya akademik, detaylı ve açıklayıcı bir cevap ver.")
-
-            st.markdown(cevap.content)
-            st.session_state.messages.append({"role": "assistant", "content": cevap.content})
-
-# --- Sohbet Geçmişi ---
+# 4. Sohbet Geçmişini Başlat
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# 5. Geçmiş mesajları ekranda tut
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# --- Sohbet Giriş Kutusu ---
+# 6. Sohbet Mantığı (Giriş kutusu)
 if prompt := st.chat_input("Akademik bir soru sor..."):
-    # Mesajı geçmişe ekle
+    # Kullanıcı mesajını ekle ve göster
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Asistan cevabı
+    # Asistan cevabı (Sadece Groq ile)
     with st.chat_message("assistant"):
         with st.spinner("Kozmik veriler işleniyor..."):
             cevap = llm.invoke(f"Soru: {prompt}. Lütfen bu soruya akademik, detaylı ve açıklayıcı bir cevap ver.")
